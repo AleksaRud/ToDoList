@@ -40,10 +40,24 @@ import { ref } from 'vue';
         
       }
 
+      function addElement(list_id:number){
+        items.value.push({id: (items.value.length).toString(), title: 'new' + (items.value.length).toString(), list: list_id});
+      }
+
+      function deleteElement(id:string){
+        let pos = items.value.findIndex(item => item.id == id);
+        items.value.splice(pos, 1);
+        for(let i=0; i<items.value.length; i++){
+          items.value[i].id = i.toString();
+        }
+      }
+
       return {
         getList,
         onDrop,
         startDrag,
+        addElement,
+        deleteElement,
       }
     },
   }
@@ -59,6 +73,8 @@ import { ref } from 'vue';
             draggable="true" 
             @dragstart="startDrag($event, item)">
             {{ item.title }}
+            <button @click="addElement(1)">+</button>
+            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
             </div>
         </div>
         <div class="drop-zone" @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent>
@@ -68,6 +84,8 @@ import { ref } from 'vue';
             draggable="true" 
             @dragstart="startDrag($event, item)">
             {{ item.title }}
+            <button @click="addElement(2)">+</button>
+            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
             </div>
         </div>
         <div class="drop-zone" @drop="onDrop($event, 3)" @dragenter.prevent @dragover.prevent>
@@ -77,34 +95,42 @@ import { ref } from 'vue';
             draggable="true" 
             @dragstart="startDrag($event, item)">
             {{ item.title }}
+            <button @click="addElement(3)">+</button>
+            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.columns {
-  margin-top: 60px;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-}
+    .columns {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        justify-content: center;
+        align-items: flex-start;
+        margin-top: 100px;
+    }
 
-.drop-zone{
-  width: 200px;
-  background-color: gray;
-  padding: 10px;
-  min-height: 10px;
-  height: fit-content;
-}
+    .drop-zone{
+        
+        min-width: 100px;
+        background-color: gray;
+        padding: 10px;
+        min-height: 10px;
+        height: fit-content;
+    }
 
-.drag-el{
-  background-color: #FFFFFF;
-  border: 2px solid black;
-  margin-bottom: 10px;
-  padding: 5px;
-}
-.drag-el:nth-last-of-type(1){
-  margin-bottom: 0;
-}
+    .drag-el{
+        width: 100px;
+        background-color: #FFFFFF;
+        border: 2px solid black;
+        margin-bottom: 10px;
+        padding: 5px;
+    }
+    .drag-el:nth-last-of-type(1){
+        margin-bottom: 0;
+    }
 </style>
