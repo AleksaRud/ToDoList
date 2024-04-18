@@ -4,16 +4,16 @@ import { ref } from 'vue';
   export default {
     setup() {
       const items = ref([
-        { id: '0', title: 'Item A', list: 1},
-        { id: '1', title: 'Item B', list: 1},
-        { id: '2', title: 'Item C', list: 2},
-        { id: '3', title: 'Item D', list: 3},
+        { id: '0', title: 'Item A', list: 1, in_edit: false},
+        { id: '1', title: 'Item B', list: 1, in_edit: false},
+        { id: '2', title: 'Item C', list: 2, in_edit: false},
+        { id: '3', title: 'Item D', list: 3, in_edit: false},
       ])
       const getList = (list:number) => {
        return items.value.filter((item) => item.list == list)
       }
 
-      const startDrag = (event:DragEvent, item:{id:string, title:String, list:number}) => {
+      const startDrag = (event:DragEvent, item:{id:string, title:String, list:number, in_edit:boolean}) => {
         console.log(item);
 
         if(event.dataTransfer){
@@ -41,7 +41,7 @@ import { ref } from 'vue';
       }
 
       function addElement(list_id:number){
-        items.value.push({id: (items.value.length).toString(), title: 'new' + (items.value.length).toString(), list: list_id});
+        items.value.push({id: (items.value.length).toString(), title: 'new', list: list_id, in_edit: false});
       }
 
       function deleteElement(id:string){
@@ -72,9 +72,16 @@ import { ref } from 'vue';
             class="drag-el" 
             draggable="true" 
             @dragstart="startDrag($event, item)">
-            {{ item.title }}
-            <button @click="addElement(1)">+</button>
-            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
+            <div v-if="!item.in_edit">
+              {{ item.title }}
+              <button @click="addElement(1)">+</button>
+              <button @click="deleteElement(item.id)">-</button>
+              <button @click="item.in_edit = !item.in_edit">edit</button>
+            </div>
+            <div v-if="item.in_edit">
+              <input type="text" v-model="item.title" />
+              <button @click="item.in_edit = !item.in_edit">ok</button>
+            </div>
             </div>
         </div>
         <div class="drop-zone" @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent>
@@ -83,9 +90,16 @@ import { ref } from 'vue';
             class="drag-el" 
             draggable="true" 
             @dragstart="startDrag($event, item)">
-            {{ item.title }}
-            <button @click="addElement(2)">+</button>
-            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
+            <div v-if="!item.in_edit">
+              {{ item.title }}
+              <button @click="addElement(2)">+</button>
+              <button @click="deleteElement(item.id)">-</button>
+              <button @click="item.in_edit = !item.in_edit">edit</button>
+            </div>
+            <div v-if="item.in_edit">
+              <input type="text" v-model="item.title" />
+              <button @click="item.in_edit = !item.in_edit">edit</button>
+            </div>
             </div>
         </div>
         <div class="drop-zone" @drop="onDrop($event, 3)" @dragenter.prevent @dragover.prevent>
@@ -94,10 +108,18 @@ import { ref } from 'vue';
             class="drag-el" 
             draggable="true" 
             @dragstart="startDrag($event, item)">
-            {{ item.title }}
-            <button @click="addElement(3)">+</button>
-            <button @click="deleteElement(item.id)">-</button> {{ item.id }}
+            <div v-if="!item.in_edit">
+              {{ item.title }}
+              <button @click="addElement(3)">+</button>
+              <button @click="deleteElement(item.id)">-</button>
+              <button @click="item.in_edit = !item.in_edit">edit</button>
             </div>
+            <div v-if="item.in_edit">
+              <input type="text" v-model="item.title" />
+              <button @click="item.in_edit = !item.in_edit">ok</button>
+            </div>
+            </div>
+            
         </div>
     </div>
 </template>
@@ -124,7 +146,7 @@ import { ref } from 'vue';
     }
 
     .drag-el{
-        width: 100px;
+        width: 200px;
         background-color: #FFFFFF;
         border: 2px solid black;
         margin-bottom: 10px;
