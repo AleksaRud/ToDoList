@@ -22,22 +22,20 @@ export default {
             list:number, 
             in_edit:boolean
         };
-        
-        
-        
+
         const items = ref([
             { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', label_color: '#FF0000', list: 1, in_edit: false},
             { id: '1', title: 'Item B', discription:'', label_color: '#FF0000', list: 1, in_edit: false},
             { id: '2', title: 'Item C', discription:'', label_color: '#FF0000', list: 2, in_edit: false},
             { id: '3', title: 'Item D', discription:'', label_color: '#FF0000', list: 3, in_edit: false},
-        ])
+        ]);
+
         items.value = getStorageData('items', items.value);
         setStorageData('items', items.value);
         
 
         const getList = (list:number) => {
             return items.value.filter((item) => item.list == list);
-            
         }
 
         const startDrag = (event:DragEvent, item:Item) => {
@@ -80,12 +78,18 @@ export default {
             setStorageData('items', items.value);
         }
 
+        function editElement(id:string){
+            let pos = items.value.findIndex(item => item.id == id);
+            items.value[pos].in_edit = !items.value[pos].in_edit;
+            setStorageData('items', items.value);
+        }
         return {
             getList,
             onDrop,
             startDrag,
             addElement,
             deleteElement,
+            editElement,
         }
     },
 }
@@ -124,7 +128,7 @@ export default {
                         Описание
                         <textarea v-model="item.discription" rows="3"></textarea>
                         <div class="buttons">
-                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                            <button @click="editElement(item.id)">ok</button>
                         </div>
                     </div>
                 </div>
@@ -156,7 +160,7 @@ export default {
                         Описание
                         <textarea v-model="item.discription" rows="3"></textarea>
                         <div class="buttons">
-                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                            <button @click="editElement(item.id)">ok</button>
                         </div>
                     </div>
                 </div>
@@ -188,7 +192,7 @@ export default {
                         Описание
                         <textarea v-model="item.discription" rows="3"></textarea>
                         <div class="buttons">
-                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                            <button @click="editElement(item.id)">ok</button>
                         </div>
                     </div>
                 </div>
