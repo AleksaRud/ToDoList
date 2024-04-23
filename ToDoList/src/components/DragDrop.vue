@@ -5,10 +5,10 @@ export default {
     setup() {
         
         const items = ref([
-            { id: '0', title: 'Item A', list: 1, in_edit: false},
-            { id: '1', title: 'Item B', list: 1, in_edit: false},
-            { id: '2', title: 'Item C', list: 2, in_edit: false},
-            { id: '3', title: 'Item D', list: 3, in_edit: false},
+            { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', label_color: '#FF0000', list: 1, in_edit: false},
+            { id: '1', title: 'Item B', discription:'', label_color: '#FF0000', list: 1, in_edit: false},
+            { id: '2', title: 'Item C', discription:'', label_color: '#FF0000', list: 2, in_edit: false},
+            { id: '3', title: 'Item D', discription:'', label_color: '#FF0000', list: 3, in_edit: false},
         ])
         
         localStorage.setItem('items', JSON.stringify(items));
@@ -17,7 +17,7 @@ export default {
             
         }
 
-        const startDrag = (event:DragEvent, item:{id:string, title:String, list:number, in_edit:boolean}) => {
+        const startDrag = (event:DragEvent, item:{id:string, title:String, discription:String, label_color:String, list:number, in_edit:boolean}) => {
             console.log(item);
 
             if(event.dataTransfer){
@@ -45,7 +45,7 @@ export default {
         }
 
         function addElement(list_id:number){
-            items.value.push({id: (items.value.length).toString(), title: 'new', list: list_id, in_edit: false});
+            items.value.push({id: (items.value.length).toString(), title: 'new', discription:'', label_color: '#FF0000', list: list_id, in_edit: false});
             localStorage.setItem('items', JSON.stringify(items));
         }
 
@@ -71,6 +71,10 @@ export default {
 </script>
 
 <template>
+    <div class="header">
+        <button @click="addElement(1)">Добавить новый таск</button>
+    </div>
+    
     <div class="columns">
         <div>
             Не начато
@@ -80,15 +84,26 @@ export default {
                 class="drag-el" 
                 draggable="true" 
                 @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit">
-                        {{ item.title }}
-                        <button @click="addElement(1)">+</button>
-                        <button @click="deleteElement(item.id)">-</button>
-                        <button @click="item.in_edit = !item.in_edit">edit</button>
+                    <div v-if="!item.in_edit" class="task">
+                        <div class="label" :style="{backgroundColor:item.label_color}"></div>
+                        <div class="title">{{ item.title }}</div>
+                        <div class="discription">{{ item.discription }}</div>
+                        <div class="buttons">
+                            <button @click="addElement(1)">+</button>
+                            <button @click="deleteElement(item.id)">-</button>
+                            <button @click="item.in_edit = !item.in_edit">edit</button>
+                        </div>
                     </div>
-                    <div v-if="item.in_edit">
+                    <div v-if="item.in_edit" class="task">
+                        Цвет
+                        <input type="color" v-model="item.label_color">
+                        Название
                         <input type="text" v-model="item.title" />
-                        <button @click="item.in_edit = !item.in_edit">ok</button>
+                        Описание
+                        <textarea v-model="item.discription" rows="3"></textarea>
+                        <div class="buttons">
+                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,15 +116,26 @@ export default {
                 class="drag-el" 
                 draggable="true" 
                 @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit">
-                        {{ item.title }}
-                        <button @click="addElement(2)">+</button>
-                        <button @click="deleteElement(item.id)">-</button>
-                        <button @click="item.in_edit = !item.in_edit">edit</button>
+                    <div v-if="!item.in_edit" class="task">
+                        <div class="label" :style="{backgroundColor:item.label_color}"></div>
+                        <div class="title">{{ item.title }}</div>
+                        <div class="discription">{{ item.discription }}</div>
+                        <div class="buttons">
+                            <button @click="addElement(2)">+</button>
+                            <button @click="deleteElement(item.id)">-</button>
+                            <button @click="item.in_edit = !item.in_edit">edit</button>
+                        </div>
                     </div>
-                    <div v-if="item.in_edit">
+                    <div v-if="item.in_edit" class="task">
+                        Цвет
+                        <input type="color" v-model="item.label_color">
+                        Название
                         <input type="text" v-model="item.title" />
-                        <button @click="item.in_edit = !item.in_edit">edit</button>
+                        Описание
+                        <textarea v-model="item.discription" rows="3"></textarea>
+                        <div class="buttons">
+                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,15 +148,26 @@ export default {
                 class="drag-el" 
                 draggable="true" 
                 @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit">
-                        {{ item.title }}
-                        <button @click="addElement(3)">+</button>
-                        <button @click="deleteElement(item.id)">-</button>
-                        <button @click="item.in_edit = !item.in_edit">edit</button>
+                    <div v-if="!item.in_edit" class="task">
+                        <div class="label" :style="{backgroundColor:item.label_color}"></div>
+                        <div class="title">{{ item.title }}</div>
+                        <div class="discription">{{ item.discription }}</div>
+                        <div class="buttons">
+                            <button @click="addElement(3)">+</button>
+                            <button @click="deleteElement(item.id)">-</button>
+                            <button @click="item.in_edit = !item.in_edit">edit</button>
+                        </div>
                     </div>
-                    <div v-if="item.in_edit">
+                    <div v-if="item.in_edit" class="task">
+                        Цвет
+                        <input type="color" v-model="item.label_color">
+                        Название
                         <input type="text" v-model="item.title" />
-                        <button @click="item.in_edit = !item.in_edit">ok</button>
+                        Описание
+                        <textarea v-model="item.discription" rows="3"></textarea>
+                        <div class="buttons">
+                            <button @click="item.in_edit = !item.in_edit">ok</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -139,6 +176,12 @@ export default {
 </template>
 
 <style scoped>
+    .header{
+        width: 100vw;
+        box-sizing: border-box;
+        padding: 20px 60px;
+        background-color: gray;
+    }
     .columns {
         width: 100%;
         height: 100%;
@@ -169,4 +212,28 @@ export default {
     .drag-el:nth-last-of-type(1){
         margin-bottom: 0;
     }
+    .task{
+        display: flex;
+        flex-direction: column;
+    }
+    .buttons{
+        display: flex;
+        flex-direction: row;
+    }
+    .label{
+        width: 40px; 
+        height: 10px;
+        border-radius: 5px;
+    }
+    textarea{
+        resize: vertical;
+    }
+    .task .title{
+        font-weight: 600;
+    }
+    /*.task .discription{
+        /*width: 40px;*/
+        
+        /*word-break:break-all;
+    }*/
 </style>
