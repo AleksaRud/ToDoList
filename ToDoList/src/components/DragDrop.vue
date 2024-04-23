@@ -1,8 +1,29 @@
 <script lang="ts">
 import { ref } from 'vue';
 
+function getStorageData(key:string, defaultValue:Array<Object>) {
+    if(window.localStorage.getItem(key)){
+         return JSON.parse(window.localStorage.getItem(key)!);
+    } else{
+        return defaultValue;
+    }
+}
+function setStorageData(key:string, data:Array<Object>) {
+  window.localStorage.setItem(key, JSON.stringify(data));
+}
+
 export default {
     setup() {
+        type Item = {
+            id:string, 
+            title:String, 
+            discription:String, 
+            label_color:String, 
+            list:number, 
+            in_edit:boolean
+        };
+        
+        
         
         const items = ref([
             { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', label_color: '#FF0000', list: 1, in_edit: false},
@@ -10,16 +31,16 @@ export default {
             { id: '2', title: 'Item C', discription:'', label_color: '#FF0000', list: 2, in_edit: false},
             { id: '3', title: 'Item D', discription:'', label_color: '#FF0000', list: 3, in_edit: false},
         ])
+        items.value = getStorageData('items', items.value);
+        setStorageData('items', items.value);
         
-        localStorage.setItem('items', JSON.stringify(items));
+
         const getList = (list:number) => {
             return items.value.filter((item) => item.list == list);
             
         }
 
-        const startDrag = (event:DragEvent, item:{id:string, title:String, discription:String, label_color:String, list:number, in_edit:boolean}) => {
-            console.log(item);
-
+        const startDrag = (event:DragEvent, item:Item) => {
             if(event.dataTransfer){
                 event.dataTransfer.dropEffect = 'move';
             }
@@ -41,12 +62,13 @@ export default {
                     item.list = list;
                 }
             }
-            localStorage.setItem('items', JSON.stringify(items));
+            setStorageData('items', items.value);
+           
         }
 
         function addElement(list_id:number){
             items.value.push({id: (items.value.length).toString(), title: 'new', discription:'', label_color: '#FF0000', list: list_id, in_edit: false});
-            localStorage.setItem('items', JSON.stringify(items));
+            setStorageData('items', items.value);
         }
 
         function deleteElement(id:string){
@@ -55,7 +77,7 @@ export default {
             for(let i=0; i<items.value.length; i++){
                 items.value[i].id = i.toString();
             }
-            localStorage.setItem('items', JSON.stringify(items));
+            setStorageData('items', items.value);
         }
 
         return {
