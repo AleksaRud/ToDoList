@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AMenu: typeof import('ant-design-vue/es')['Menu']
     DragDrop: typeof import('./src/components/DragDrop.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
   }

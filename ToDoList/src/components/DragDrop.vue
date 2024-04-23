@@ -12,8 +12,10 @@ function setStorageData(key:string, data:Array<Object>) {
   window.localStorage.setItem(key, JSON.stringify(data));
 }
 
+
 export default {
     setup() {
+
         type Item = {
             id:string, 
             title:String, 
@@ -83,6 +85,47 @@ export default {
             items.value[pos].in_edit = !items.value[pos].in_edit;
             setStorageData('items', items.value);
         }
+
+        const lists = ref([
+            {title: "не начато", list_id: 1, in_edit: false},
+            {title: "в процессе", list_id: 2, in_edit: false},
+            {title: "готово", list_id: 3, in_edit: false},
+        ]);
+        lists.value = getStorageData('lists', lists.value);
+        setStorageData('lists', lists.value);
+
+        function addList(){
+            lists.value.push({title: "New List", list_id: lists.value.length+1, in_edit: false});
+            setStorageData('items', items.value);
+            setStorageData('lists', lists.value);
+        }
+        function deleteList(list_id:number){
+            if(lists.value.length == 1){
+                items.value.splice(0, items.value.length);
+                lists.value.splice(list_id-1, 1);
+            }
+            else{
+                lists.value.splice(list_id-1, 1);
+                for(let i=0; i<lists.value.length; i++){
+                    lists.value[i].list_id = i+1;
+                }
+                for(let i=0; i<items.value.length; i++){
+                    if(items.value[i].list == list_id){
+                        items.value[i].list -= 1; 
+                        if(items.value[i].list == 0){
+                            items.value[i].list = 1;
+                        }
+                    }
+                }
+            }
+            setStorageData('lists', lists.value);
+            setStorageData('items', items.value);
+        }
+
+        function editList(list_id:number){
+            lists.value[list_id-1].in_edit = !lists.value[list_id-1].in_edit;
+            setStorageData('lists', lists.value);
+        }
         return {
             getList,
             onDrop,
@@ -90,22 +133,35 @@ export default {
             addElement,
             deleteElement,
             editElement,
+            lists,
+            addList,
+            deleteList,
+            editList,
         }
     },
 }
 
+
+
+
 </script>
 
 <template>
-    <div class="header">
-        <button @click="addElement(1)">Добавить новый таск</button>
-    </div>
     
+    <button @click="addList" style="margin-top: 40px; margin-left: 200px;">Добавить колонку</button>
     <div class="columns">
-        <div>
-            Не начато
-            <div class="drop-zone" @drop="onDrop($event, 1)" @dragenter.prevent @dragover.prevent>
-                <div v-for="item in getList(1)" 
+        <div v-for="list in lists">    
+            <div v-if="!list.in_edit">
+                {{ list.title }}
+                <button @click="deleteList(list.list_id)">Удалить</button>
+                <button @click="list.in_edit = !list.in_edit">Edit</button>
+            </div>
+            <div v-if="list.in_edit">
+                <input type="text" v-model="list.title" />
+                <button @click="editList(list.list_id)">OK</button>
+            </div>
+            <div class="drop-zone" @drop="onDrop($event, list.list_id)" @dragenter.prevent @dragover.prevent>
+                <div v-for="item in getList(list.list_id)" 
                 :key="item.id" 
                 class="drag-el" 
                 draggable="true" 
@@ -115,7 +171,7 @@ export default {
                         <div class="title">{{ item.title }}</div>
                         <div class="discription">{{ item.discription }}</div>
                         <div class="buttons">
-                            <button @click="addElement(1)">+</button>
+                            <button @click="addElement(list.list_id)">+</button>
                             <button @click="deleteElement(item.id)">-</button>
                             <button @click="item.in_edit = !item.in_edit">edit</button>
                         </div>
@@ -133,81 +189,14 @@ export default {
                     </div>
                 </div>
             </div>
+            <button @click="addElement(list.list_id)">Добавить новый таск</button>
         </div>
-        <div>
-            В процессе
-            <div class="drop-zone" @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent>
-                <div v-for="item in getList(2)" 
-                :key="item.id" 
-                class="drag-el" 
-                draggable="true" 
-                @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit" class="task">
-                        <div class="label" :style="{backgroundColor:item.label_color}"></div>
-                        <div class="title">{{ item.title }}</div>
-                        <div class="discription">{{ item.discription }}</div>
-                        <div class="buttons">
-                            <button @click="addElement(2)">+</button>
-                            <button @click="deleteElement(item.id)">-</button>
-                            <button @click="item.in_edit = !item.in_edit">edit</button>
-                        </div>
-                    </div>
-                    <div v-if="item.in_edit" class="task">
-                        Цвет
-                        <input type="color" v-model="item.label_color">
-                        Название
-                        <input type="text" v-model="item.title" />
-                        Описание
-                        <textarea v-model="item.discription" rows="3"></textarea>
-                        <div class="buttons">
-                            <button @click="editElement(item.id)">ok</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div>
-            Готово
-            <div class="drop-zone" @drop="onDrop($event, 3)" @dragenter.prevent @dragover.prevent>
-                <div v-for="item in getList(3)" 
-                :key="item.id" 
-                class="drag-el" 
-                draggable="true" 
-                @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit" class="task">
-                        <div class="label" :style="{backgroundColor:item.label_color}"></div>
-                        <div class="title">{{ item.title }}</div>
-                        <div class="discription">{{ item.discription }}</div>
-                        <div class="buttons">
-                            <button @click="addElement(3)">+</button>
-                            <button @click="deleteElement(item.id)">-</button>
-                            <button @click="item.in_edit = !item.in_edit">edit</button>
-                        </div>
-                    </div>
-                    <div v-if="item.in_edit" class="task">
-                        Цвет
-                        <input type="color" v-model="item.label_color">
-                        Название
-                        <input type="text" v-model="item.title" />
-                        Описание
-                        <textarea v-model="item.discription" rows="3"></textarea>
-                        <div class="buttons">
-                            <button @click="editElement(item.id)">ok</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+
     </div>
 </template>
 
 <style scoped>
-    .header{
-        width: 100vw;
-        box-sizing: border-box;
-        padding: 20px 60px;
-        background-color: gray;
-    }
     .columns {
         width: 100%;
         height: 100%;
