@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" setup>
 import { ref } from 'vue';
 
 function getStorageData(key:string, defaultValue:Array<Object>) {
@@ -13,8 +13,8 @@ function setStorageData(key:string, data:Array<Object>) {
 }
 
 
-export default {
-    setup() {
+//export default {
+    //setup() {
 
         type Item = {
             id:string, 
@@ -126,7 +126,7 @@ export default {
             lists.value[list_id-1].in_edit = !lists.value[list_id-1].in_edit;
             setStorageData('lists', lists.value);
         }
-        return {
+        /*return {
             getList,
             onDrop,
             startDrag,
@@ -138,8 +138,8 @@ export default {
             deleteList,
             editList,
         }
-    },
-}
+    },*/
+//}
 
 
 
@@ -152,9 +152,8 @@ export default {
     <div class="columns">
         <div v-for="list in lists">    
             <div v-if="!list.in_edit">
-                {{ list.title }}
+                <div @click="list.in_edit = !list.in_edit">{{ list.title }}</div>
                 <button @click="deleteList(list.list_id)">Удалить</button>
-                <button @click="list.in_edit = !list.in_edit">Edit</button>
             </div>
             <div v-if="list.in_edit">
                 <input type="text" v-model="list.title" />
@@ -165,34 +164,37 @@ export default {
                 :key="item.id" 
                 class="drag-el" 
                 draggable="true" 
-                @dragstart="startDrag($event, item)">
-                    <div v-if="!item.in_edit" class="task">
+                @dragstart="startDrag($event, item)" :style="{outlineColor: (!item.in_edit) ? '#000000' : '#AAAAFF', outlineWidth: (!item.in_edit) ? '0px' : '4px'}">
+                    <div class="task" >
                         <div class="label" :style="{backgroundColor:item.label_color}"></div>
                         <div class="title">{{ item.title }}</div>
                         <div class="discription">{{ item.discription }}</div>
                         <div class="buttons">
-                            <button @click="addElement(list.list_id)">+</button>
-                            <button @click="deleteElement(item.id)">-</button>
-                            <button @click="item.in_edit = !item.in_edit">edit</button>
+                            <button @click="deleteElement(item.id)">delete</button>
+                            <button v-if="!item.in_edit" @click="item.in_edit = !item.in_edit">edit</button>
                         </div>
                     </div>
-                    <div v-if="item.in_edit" class="task">
-                        Цвет
-                        <input type="color" v-model="item.label_color">
-                        Название
-                        <input type="text" v-model="item.title" />
-                        Описание
-                        <textarea v-model="item.discription" rows="3"></textarea>
-                        <div class="buttons">
-                            <button @click="editElement(item.id)">ok</button>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             <button @click="addElement(list.list_id)">Добавить новый таск</button>
         </div>
-
-
+        
+    </div>
+    <div class="edit-window">
+        <div v-for="item in items">
+            <div v-if="item.in_edit" class="edit-label">
+                Цвет
+                <input type="color" v-model="item.label_color">
+                Название
+                <input type="text" v-model="item.title" />
+                Описание
+                <textarea v-model="item.discription" rows="3"></textarea>
+                <div class="buttons">
+                    <button @click="editElement(item.id)">ok</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -220,7 +222,9 @@ export default {
     .drag-el{
         width: 200px;
         background-color: #FFFFFF;
-        border: 2px solid black;
+        outline: 2px solid black;
+        outline-offset: -1px;
+        border-radius: 2px;
         margin-bottom: 10px;
         padding: 5px;
     }
@@ -245,6 +249,31 @@ export default {
     }
     .task .title{
         font-weight: 600;
+    }
+    .edit-window{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content:center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        min-width: 0px;
+        width: fit-content;
+        position: absolute;
+        right: 0px;
+        
+        min-height: 0px;
+        
+        
+        background-color: lightsteelblue;
+    }
+    .edit-label{
+        display: flex;
+        flex-direction: column;
+        
+        border: #000000 1px solid;
+        padding: 10px;
+        margin: 0px 20px;
     }
     /*.task .discription{
         /*width: 40px;*/
