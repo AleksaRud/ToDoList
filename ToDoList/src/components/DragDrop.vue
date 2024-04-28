@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import type { Item, Person } from './types'
 
     function getStorageData(key:string, defaultValue:Array<Object>) {
         if(window.localStorage.getItem(key)){
@@ -11,17 +12,7 @@ import { ref } from 'vue';
     function setStorageData(key:string, data:Array<Object>) {
     window.localStorage.setItem(key, JSON.stringify(data));
     }
-
-    type Item = {
-        id:string, 
-        title:String, 
-        discription:String,
-        added_people: Array<String>, 
-        label_color:String, 
-        list:number, 
-        in_edit:boolean
-    };
-
+    
     const items = ref([
         { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', added_people:['',], label_color: '#FF0000', list: 1, in_edit: false},
         { id: '1', title: 'Item B', discription:'', added_people:['',], label_color: '#FF0000', list: 1, in_edit: false},
@@ -123,19 +114,18 @@ import { ref } from 'vue';
         setStorageData('lists', lists.value);
     }
     
-    function removePerson(id:string, index:number){
-        let pos = items.value.findIndex(item => item.id == id);
-        items.value[pos].added_people.splice(index, 1);
+    const people = ref<Person[]> ([]);
+    people.value = getStorageData('people', people.value);
+    setStorageData('people', people.value);
+
+    const selected = ref<String[]>([]);
         
-        setStorageData('items', items.value);
-    }
-    
-    const people = ref(['Nik', 'Mike', 'Ann']);
-    const add_person_flag = ref(false);
-    function addPerson(id:string, person:string){
+    function addPerson(id:string){
         let pos = items.value.findIndex(item => item.id == id);
-        items.value[pos].added_people.push(person);
-        add_person_flag.value = !add_person_flag.value;
+        items.value[pos].added_people.splice(0, items.value[pos].added_people.length);
+        for(let i=0; i<selected.value.length; i++){
+            items.value[pos].added_people.push(selected.value[i].toString());
+        }
         setStorageData('items', items.value);
     }
 </script>
@@ -191,23 +181,16 @@ import { ref } from 'vue';
                     Описание
                     <textarea v-model="item.discription" rows="3"></textarea>
                     Люди
-                    <div v-for="(people, idx) in item.added_people">
-                        {{ people }}
-                        <button @click="removePerson(item.id, idx)">-</button>
-                    </div>
-                    <div v-if="!add_person_flag">
-                        <button @click="add_person_flag = !add_person_flag">Add person</button>
-                        {{ add_person_flag }}
-                    </div>
+
+                    <a-select
+                        v-model:value="selected"
+                        mode="multiple"
+                        style="width: 100%"
+                        placeholder="Please select"
+                        :options="[...people].map((_, i) => ({ value: people[i].name }))"
+                        @change="addPerson(item.id)"
+                    ></a-select>
                     
-                    <div v-if="add_person_flag">
-                        <div v-for="person in people">
-                            {{ add_person_flag }}
-                            <button @click="addPerson(item.id, person)">
-                            {{ person }}
-                            </button>
-                        </div>
-                    </div>
                     <div class="buttons">
                         <button @click="editElement(item.id)">ok</button>
                     </div>
@@ -307,9 +290,5 @@ import { ref } from 'vue';
         padding: 10px;
         margin: 0px 20px;
     }
-    /*.task .discription{
-        /*width: 40px;*/
-        
-        /*word-break:break-all;
-    }*/
+    
 </style>
