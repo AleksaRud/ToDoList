@@ -128,16 +128,29 @@ import type { Item, Person } from './types'
         }
         setStorageData('items', items.value);
     }
+    
+    const theme = {
+        token: {
+            "colorPrimary": "#87bba2",
+            "borderRadius": 5,
+            "lineWidth": 2,
+
+            "colorInfo": "#87bba2",
+        }
+    }
 </script>
 
 <template>
     <div class="drag-drop-window">
-        <button @click="addList" >Добавить колонку</button>
+        <button @click="addList" class="add-column">
+            <div class="add-icon"></div>
+            Добавить колонку
+        </button>
         <div class="columns">
             <div v-for="list in lists">    
-                <div v-if="!list.in_edit">
+                <div v-if="!list.in_edit" class="label-buttons">
                     <div @click="list.in_edit = !list.in_edit">{{ list.title }}</div>
-                    <button @click="deleteList(list.list_id)">Удалить</button>
+                    <button @click="deleteList(list.list_id)" class="delete-button"></button>
                 </div>
                 <div v-if="list.in_edit">
                     <input type="text" v-model="list.title" />
@@ -148,9 +161,16 @@ import type { Item, Person } from './types'
                     :key="item.id" 
                     class="drag-el" 
                     draggable="true" 
-                    @dragstart="startDrag($event, item)" :style="{outlineColor: (!item.in_edit) ? '#000000' : '#AAAAFF', outlineWidth: (!item.in_edit) ? '0px' : '4px'}">
+                    @dragstart="startDrag($event, item)" :style="{outlineColor: (!item.in_edit) ? '#232523' : '#87BBA2', outlineWidth: (!item.in_edit) ? '0px' : '4px'}">
                         <div class="task" >
-                            <div class="label" :style="{backgroundColor:item.label_color}"></div>
+                            <div class="label-buttons">
+                                <div class="label" :style="{backgroundColor:item.label_color}"></div>
+                                <div class="buttons">
+                                    <button v-if="!item.in_edit" @click="editElement(item.id)" class="edit-button"></button>
+                                    <button @click="deleteElement(item.id)" class="delete-button"></button>
+                                </div>
+                            </div>
+                            
                             <div class="title">{{ item.title }}</div>
                             <div class="discription">{{ item.discription }}</div>
                             <div class="added-people">
@@ -158,10 +178,7 @@ import type { Item, Person } from './types'
                                 {{ people }}
                                 </div>
                             </div>
-                            <div class="buttons">
-                                <button @click="deleteElement(item.id)">delete</button>
-                                <button v-if="!item.in_edit" @click="editElement(item.id)">edit</button>
-                            </div>
+                            
                         </div>
                         
                     </div>
@@ -181,16 +198,16 @@ import type { Item, Person } from './types'
                     Описание
                     <textarea v-model="item.discription" rows="3"></textarea>
                     Люди
-
-                    <a-select
-                        v-model:value="selected"
-                        mode="multiple"
-                        style="width: 100%"
-                        placeholder="Please select"
-                        :options="[...people].map((_, i) => ({ value: people[i].name }))"
-                        @change="addPerson(item.id)"
-                    ></a-select>
-                    
+                    <a-config-provider :theme="theme">
+                        <a-select
+                            v-model:value="selected"
+                            mode="multiple"
+                            style="width: 100%"
+                            placeholder="Please select"
+                            :options="[...people].map((_, i) => ({ value: people[i].name }))"
+                            @change="addPerson(item.id)"
+                        ></a-select>
+                    </a-config-provider>
                     <div class="buttons">
                         <button @click="editElement(item.id)">ok</button>
                     </div>
@@ -201,6 +218,46 @@ import type { Item, Person } from './types'
 </template>
 
 <style scoped>
+    *{
+        font-size: 17px;
+        color: #232523;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    button{
+        border: none;
+        transition: all 0.3s;
+        background-color: #87BBA2;
+        color: #FFFFFF;
+    }
+    button:hover{
+        background-color: #5d737e;
+    }
+    .add-column{
+        margin-top: 40px;
+        background-color: #87BBA2;
+        font-weight: 600;
+        font-size: 20px;
+        color: #FFFFFF;
+        padding: 40px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        
+    }
+    .add-column:hover{
+        background-color: #5d737e;
+    }
+    .add-icon{
+        width: 40px;
+        height: 40px;
+        background-image: url('../assets/add.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
     .drag-drop-window{
         width: 100%;
         height: 100%;
@@ -209,8 +266,8 @@ import type { Item, Person } from './types'
         flex-direction: row;
         justify-content: flex-start;
         align-items: flex-start;
-        padding: 100px 60px;
-        gap: 200px;
+        padding: 100px 80px;
+        gap: 80px;
     }
     .columns {
         /*width: 100%;*/
@@ -227,16 +284,16 @@ import type { Item, Person } from './types'
     .drop-zone{
         
         min-width: 100px;
-        background-color: gray;
+        background-color: #5d737e;
         padding: 10px;
         min-height: 10px;
         height: fit-content;
     }
 
     .drag-el{
-        width: 200px;
-        background-color: #FFFFFF;
-        outline: 2px solid black;
+        width: 230px;
+        background-color: #f0f7ee;
+        outline: 2px solid #232523;
         outline-offset: -1px;
         border-radius: 2px;
         margin-bottom: 10px;
@@ -252,6 +309,7 @@ import type { Item, Person } from './types'
     .buttons{
         display: flex;
         flex-direction: row;
+        gap: 5px;
     }
     .label{
         width: 40px; 
@@ -262,7 +320,7 @@ import type { Item, Person } from './types'
         resize: vertical;
     }
     .task .title{
-        font-weight: 600;
+        font-weight: 700;
     }
     .edit-window{
         display: flex;
@@ -280,15 +338,55 @@ import type { Item, Person } from './types'
         min-height: 0px;
         box-sizing: border-box;
         
-        background-color: lightsteelblue;
+        background-color: #87BBA2;
     }
     .edit-label{
         display: flex;
         flex-direction: column;
+        background-color: #f0f7ee;
         
-        border: #000000 1px solid;
         padding: 10px;
-        margin: 0px 20px;
+        margin: 40px 20px;
+        border-radius: 2px;
+        gap: 4px;
+    }
+    .edit-button{
+        background: none;
+        width: 28px;
+        height: 28px;
+        background-image: url('../assets/edit.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+        padding: 4px;
+        border-radius: 4px;
+    }
+    .edit-button:hover{
+        background: none;
+        background-image: url('../assets/edit-hover.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    .delete-button{
+        background: none;
+        width: 28px;
+        height: 28px;
+        background-image: url('../assets/delete.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+        padding: 4px;
+        border-radius: 4px;
+    }
+    .delete-button:hover{
+        background: none;
+        background-image: url('../assets/delete-hover.svg');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    .label-buttons{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
     
 </style>
