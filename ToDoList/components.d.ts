@@ -10,5 +10,8 @@ declare module 'vue' {
     AMenu: typeof import('ant-design-vue/es')['Menu']
     DragDrop: typeof import('./src/components/DragDrop.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    People: typeof import('./src/components/People.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }

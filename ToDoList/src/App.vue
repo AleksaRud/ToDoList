@@ -1,13 +1,22 @@
 <script setup lang="ts">
 
-import DragDrop from './components/DragDrop.vue'
-
 </script>
 
 <template>
-  <DragDrop />
+  
+  <div class="header">
+    <RouterLink to="/">Таски</RouterLink>
+    <RouterLink to="/people">Люди</RouterLink>
+  </div>
+    <RouterView/>
+  
 </template>
 
 <style scoped>
-
+  .header{
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    justify-content: center;
+  }
 </style>
