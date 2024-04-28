@@ -97,7 +97,7 @@ import type { Item, Person } from './types'
                 lists.value[i].list_id = i+1;
             }
             for(let i=0; i<items.value.length; i++){
-                if(items.value[i].list == list_id){
+                if(items.value[i].list >= list_id){
                     items.value[i].list -= 1; 
                     if(items.value[i].list == 0){
                         items.value[i].list = 1;
