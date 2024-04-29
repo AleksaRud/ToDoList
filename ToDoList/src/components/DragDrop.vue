@@ -147,13 +147,17 @@ import type { Item, Person } from './types'
             Добавить колонку
         </button>
         <div class="columns">
-            <div v-for="list in lists">    
+            <div v-for="list in lists" class="column">    
                 <div v-if="!list.in_edit" class="label-buttons">
-                    <div @click="list.in_edit = !list.in_edit">{{ list.title }}</div>
+                    <div @click="list.in_edit = !list.in_edit" class="title">{{ list.title }}</div>
                     <button @click="deleteList(list.list_id)" class="delete-button"></button>
                 </div>
-                <div v-if="list.in_edit">
-                    <input type="text" v-model="list.title" />
+                <div v-if="list.in_edit" class="label-buttons">
+                    <a-textarea
+                        v-model:value="list.title"
+                        placeholder="Введите название"
+                        auto-size
+                        />
                     <button @click="editList(list.list_id)">OK</button>
                 </div>
                 <div class="drop-zone" @drop="onDrop($event, list.list_id)" @dragenter.prevent @dragover.prevent>
@@ -188,33 +192,41 @@ import type { Item, Person } from './types'
             
         </div>
     </div>
+    <a-config-provider :theme="theme">
         <div class="edit-window">
             <div v-for="item in items">
                 <div v-if="item.in_edit" class="edit-label">
-                    Цвет
-                    <input type="color" v-model="item.label_color">
-                    Название
-                    <input type="text" v-model="item.title" />
-                    Описание
-                    <textarea v-model="item.discription" rows="3"></textarea>
-                    Люди
-                    <a-config-provider :theme="theme">
+                        Цвет
+                        <input type="color" v-model="item.label_color">
+                        Название
+                        <a-textarea
+                        v-model:value="item.title"
+                        placeholder="Введите название"
+                        auto-size
+                        />
+                        Описание
+                        <a-textarea
+                        v-model:value="item.discription"
+                        placeholder="Введите описание"
+                        :auto-size="{ minRows: 2, maxRows: 5 }"
+                        />
+                        Люди
                         <a-select
                             v-model:value="selected"
                             mode="multiple"
                             style="width: 100%"
-                            placeholder="Please select"
+                            placeholder="Выберите из списка"
                             :options="[...people].map((_, i) => ({ value: people[i].name }))"
                             @change="addPerson(item.id)"
                         ></a-select>
-                    </a-config-provider>
+                    
                     <div class="buttons">
                         <button @click="editElement(item.id)">ok</button>
                     </div>
                 </div>
             </div>
         </div>
-    
+    </a-config-provider>
 </template>
 
 <style scoped>
@@ -229,6 +241,8 @@ import type { Item, Person } from './types'
         transition: all 0.3s;
         background-color: #87BBA2;
         color: #FFFFFF;
+        padding: 8px 10px;
+        border-radius: 8px;
     }
     button:hover{
         background-color: #5d737e;
@@ -280,7 +294,12 @@ import type { Item, Person } from './types'
         align-items: flex-start;
         
     }
-
+    .column{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        justify-content: center;
+    }
     .drop-zone{
         
         min-width: 100px;
@@ -288,10 +307,11 @@ import type { Item, Person } from './types'
         padding: 10px;
         min-height: 10px;
         height: fit-content;
+        border-radius: 2px;
     }
 
     .drag-el{
-        width: 230px;
+        width: 232px;
         background-color: #f0f7ee;
         outline: 2px solid #232523;
         outline-offset: -1px;
@@ -347,8 +367,8 @@ import type { Item, Person } from './types'
         
         padding: 10px;
         margin: 40px 20px;
-        border-radius: 2px;
-        gap: 4px;
+        border-radius: 6px;
+        gap: 8px;
     }
     .edit-button{
         background: none;
@@ -387,6 +407,10 @@ import type { Item, Person } from './types'
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        height: 20px;
+        width: 100%;
     }
-    
+    .label-buttons .title{
+        padding: 3px 3px 0 12px;
+    }
 </style>
