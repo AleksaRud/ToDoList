@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AAutoComplete: typeof import('ant-design-vue/es')['AutoComplete']
     AButton: typeof import('ant-design-vue/es')['Button']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     AMenu: typeof import('ant-design-vue/es')['Menu']

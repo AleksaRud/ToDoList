@@ -14,10 +14,10 @@ import type { Item, Person } from './types'
     }
     
     const items = ref([
-        { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', added_people:['',], label_color: '#FF0000', list: 1, in_edit: false},
-        { id: '1', title: 'Item B', discription:'', added_people:['',], label_color: '#FF0000', list: 1, in_edit: false},
-        { id: '2', title: 'Item C', discription:'', added_people:['',], label_color: '#FF0000', list: 2, in_edit: false},
-        { id: '3', title: 'Item D', discription:'', added_people:['',], label_color: '#FF0000', list: 3, in_edit: false},
+        { id: '0', title: 'Item A', discription:'An extraordinarily long English word!', added_people:['',], label_color: '#006F48', list: 1, in_edit: false},
+        { id: '1', title: 'Item B', discription:'', added_people:['',], label_color: '#006F48', list: 1, in_edit: false},
+        { id: '2', title: 'Item C', discription:'', added_people:['',], label_color: '#006F48', list: 2, in_edit: false},
+        { id: '3', title: 'Item D', discription:'', added_people:['',], label_color: '#006F48', list: 3, in_edit: false},
     ]);
 
     items.value = getStorageData('items', items.value);
@@ -110,7 +110,7 @@ import type { Item, Person } from './types'
     }
 
     function editList(list_id:number){
-        lists.value[list_id-1].in_edit = !lists.value[list_id-1].in_edit;
+        lists.value.forEach( list => list.in_edit = (list.list_id == list_id) ? !list.in_edit : false);
         setStorageData('lists', lists.value);
     }
     
@@ -149,7 +149,7 @@ import type { Item, Person } from './types'
         <div class="columns">
             <div v-for="list in lists" class="column">    
                 <div v-if="!list.in_edit" class="label-buttons">
-                    <div @click="list.in_edit = !list.in_edit" class="title">{{ list.title }}</div>
+                    <div @click="editList(list.list_id)" class="title">{{ list.title }}</div>
                     <button @click="deleteList(list.list_id)" class="delete-button"></button>
                 </div>
                 <div v-if="list.in_edit" class="label-buttons">
@@ -158,7 +158,7 @@ import type { Item, Person } from './types'
                         placeholder="Введите название"
                         auto-size
                         />
-                    <button @click="editList(list.list_id)">OK</button>
+                    <button @click="editList(list.list_id)">Oк</button>
                 </div>
                 <div class="drop-zone" @drop="onDrop($event, list.list_id)" @dragenter.prevent @dragover.prevent>
                     <div v-for="item in getList(list.list_id)" 
@@ -187,7 +187,7 @@ import type { Item, Person } from './types'
                         
                     </div>
                 </div>
-                <button @click="addElement(list.list_id)">Добавить новый таск</button>
+                <button @click="addElement(list.list_id)">Добавить новую задачу</button>
             </div>
             
         </div>
@@ -198,6 +198,7 @@ import type { Item, Person } from './types'
                 <div v-if="item.in_edit" class="edit-label">
                         Цвет
                         <input type="color" v-model="item.label_color">
+                            
                         Название
                         <a-textarea
                         v-model:value="item.title"
@@ -210,7 +211,7 @@ import type { Item, Person } from './types'
                         placeholder="Введите описание"
                         :auto-size="{ minRows: 2, maxRows: 5 }"
                         />
-                        Люди
+                        Пользователи
                         <a-select
                             v-model:value="selected"
                             mode="multiple"
@@ -221,7 +222,7 @@ import type { Item, Person } from './types'
                         ></a-select>
                     
                     <div class="buttons">
-                        <button @click="editElement(item.id)">ok</button>
+                        <button @click="editElement(item.id)">Ок</button>
                     </div>
                 </div>
             </div>
@@ -230,6 +231,18 @@ import type { Item, Person } from './types'
 </template>
 
 <style scoped>
+    input[type="color"]
+    {
+        appearance: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+    }
+    input[type="color" i]::-webkit-color-swatch-wrapper 
+    {
+        padding: 0;
+    }
     *{
         font-size: 17px;
         color: #232523;
@@ -284,7 +297,6 @@ import type { Item, Person } from './types'
         gap: 80px;
     }
     .columns {
-        /*width: 100%;*/
         width: fit-content;
         height: fit-content;
         display: flex;
@@ -292,12 +304,11 @@ import type { Item, Person } from './types'
         gap: 15px;
         justify-content: center;
         align-items: flex-start;
-        
     }
     .column{
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         justify-content: center;
     }
     .drop-zone{
@@ -359,6 +370,7 @@ import type { Item, Person } from './types'
         box-sizing: border-box;
         
         background-color: #87BBA2;
+        border-left: #5d737e 4px solid;
     }
     .edit-label{
         display: flex;
@@ -413,4 +425,5 @@ import type { Item, Person } from './types'
     .label-buttons .title{
         padding: 3px 3px 0 12px;
     }
+    
 </style>

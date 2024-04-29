@@ -7,11 +7,11 @@
   <div class="header">
     <RouterLink to="/">
       <div class="tasks-icon"></div>
-      Таски
+      Задачи
     </RouterLink>
     <RouterLink to="/people">
       <div class="users-icon"></div>
-      Люди
+      Пользователи
     </RouterLink>
   </div>
     <RouterView/>
