@@ -55,7 +55,7 @@ import type { Item, Person } from './types'
     }
 
     function addElement(list_id:number){
-        items.value.push({id: (items.value.length).toString(), title: 'new', discription:'', added_people:['',], label_color: '#FF0000', list: list_id, in_edit: false});
+        items.value.push({id: (items.value.length).toString(), title: 'new', discription:'', added_people:['',], label_color: '#006F48', list: list_id, in_edit: false});
         setStorageData('items', items.value);
     }
 
